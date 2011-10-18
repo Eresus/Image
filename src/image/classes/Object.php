@@ -34,6 +34,9 @@
 /**
  * Объект изображения
  *
+ * @property-read string $path  полный файловый путь к файлу
+ * @property-read string $url   полный URL картинки
+ *
  * @package Image
  * @since 1.00
  */
@@ -158,7 +161,7 @@ class Image_Object
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Загружает файл по поисанию из $_FILES
+	 * Загружает файл по описанию из $_FILES
 	 *
 	 * @param array $info элемент массива $_FILES
 	 *
@@ -411,6 +414,9 @@ class Image_Object
 	 *
 	 * @param array $info
 	 *
+	 * @throws RuntimeException  если $info['tmp_file'] не указывет на правильный загруженный файл
+	 * @throws RuntimeException  если не удаётся создать промежуточную директорию
+	 *
 	 * @return void
 	 *
 	 * @since 1.00
@@ -430,7 +436,16 @@ class Image_Object
 			if (!file_exists($path))
 			{
 				$umask = umask(0000);
-				mkdir($path, 0777);
+				try
+				{
+					mkdir($path, 0777);
+				}
+				catch (Exception $e)
+				{
+					umask($umask);
+					throw new RuntimeException(sprintf('Can\'t create directory "%s": %s', $path,
+						$e->getMessage()));
+				}
 				umask($umask);
 			}
 			$root = $path;
