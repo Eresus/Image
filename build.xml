@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Сборочный файл для Image
+
+ $Id$
+ -->
+
+<project name="image" default="build" basedir="./">
+
+	<property file="build.properties" />
+
+	<!--
+	=====================================================================
+	Наборы файлов
+	=====================================================================
+	-->
+
+	<!-- Все исходные файлы -->
+	<fileset dir="src" id="files.sources">
+		<include name="**" />
+		<exclude name=".svn" />
+	</fileset>
+
+		<!-- Исходные файлы PHP -->
+		<fileset dir="src" id="files.sources.php">
+			<include name="**/*.php" />
+		</fileset>
+
+	<!--
+	=====================================================================
+	Модульные тесы
+	=====================================================================
+	-->
+	<target name="tests" description="Run unit tests">
+
+		<phplint>
+			<fileset refid="files.sources.php" />
+		</phplint>
+
+		<mkdir dir="${logs.dir}" />
+		<exec
+			command="phpunit 
+				--log-junit ${logs.dir}/phpunit.xml
+				--coverage-clover ${logs.dir}/phpunit.coverage.xml
+				--coverage-html ${phpunit.coverage.html}
+				${project.basedir}/tests/phpunit/AllTests.php"
+			checkreturn="true"
+			logoutput="true"
+		/>
+
+	</target>
+
+	<!--
+	=====================================================================
+	Поиск плохого кода
+	=====================================================================
+	-->
+	<target name="mess" description="Mess detection">
+
+		<mkdir dir="${logs.dir}" />
+
+		<phpmd rulesets="${phpmd.rulesets}">
+			<formatter
+				type="${phpmd.format}"
+				outfile="${logs.dir}/phpmd.${phpmd.format}"
+			/>
+			<fileset refid="files.sources.php" />
+		</phpmd>
+
+	</target>
+
+	<!--
+	=====================================================================
+	Проверка соблюдения стандартов кодирования
+	=====================================================================
+	-->
+	<target name="checkstyle" description="Check for coding standards">
+	
+		<mkdir dir="${logs.dir}" />
+
+		<if>
+			<equals arg1="${phpcs.format}" arg2="checkstyle" />
+			<then>
+				<property name="phpcs.file.extension" value="xml" />
+			</then>
+			<else>
+				<property name="phpcs.file.extension" value="${phpcs.format}" />
+			</else>
+		</if>
+
+		<phpcodesniffer
+			standard="Eresus"
+			haltonerror="false"
+		>
+			<formatter
+				type="${phpcs.format}"
+				outfile="${logs.dir}/phpcs.${phpcs.file.extension}"
+			/>
+			<fileset refid="files.sources.php" />
+		</phpcodesniffer>
+
+	</target>
+
+	<!--
+	=====================================================================
+	Очистка сборки от всех созданных файлов
+	=====================================================================
+	-->
+
+	<target name="clean" description="Clean up build">
+
+		<delete dir="${distr.dir}" includeemptydirs="true" />
+		<delete dir="${build.dir}" includeemptydirs="true" />
+		<delete dir="${docs.dir}" includeemptydirs="true" />
+		<delete dir="${logs.dir}" includeemptydirs="true" />
+		<delete dir="${phpunit.coverage.html}" includeemptydirs="true" />
+
+	</target>
+
+	<!--
+	=====================================================================
+	Сборка проекта
+	=====================================================================
+	-->
+
+	<target name="build" description="Build project">
+
+		<mkdir dir="${build.dir}" />
+
+		<copy todir="${build.dir}">
+			<fileset refid="files.sources" />
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</copy>
+
+	</target>
+
+	<!--
+	=====================================================================
+	Документация API
+	=====================================================================
+	-->
+	<target name="docs" description="Generate documentation">
+
+		<delete dir="${docs.dir}" includeemptydirs="true" failonerror="true" />
+
+		<phpdoc title="Image ${product.version} API"
+			destdir="${docs.dir}"
+			sourcecode="no"
+			parseprivate="false"
+			output="${docs.converter}">
+			<fileset refid="files.sources" />
+			<projdocfileset dir=".">
+				<include name="README" />
+				<include name="INSTALL" />
+				<include name="CHANGELOG" />
+			</projdocfileset>
+		</phpdoc>
+
+	</target>
+
+	<!--
+	=====================================================================
+	Создание дистрибутива
+	=====================================================================
+	-->
+	<target name="distr" depends="build" description="Build distributive">
+
+		<available file="${distr.dir}" type="dir" property="distr.dir.exists" />
+
+		<if>
+			<not>
+				<isset property="${distr.dir.exists}" />
+			</not>
+
+			<then>
+				<mkdir dir="${distr.dir}" />
+			</then>
+
+		</if>
+
+		<tar destfile="${distr.dir}/${phing.project.name}-${product.version}.tar.bz2" compression="bzip2">
+			<fileset dir="${build.dir}">
+				<include name="**" />
+			</fileset>
+		</tar>
+
+	</target>
+
+</project>
