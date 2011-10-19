@@ -315,7 +315,7 @@ class Image_Object
 	/**
 	 * Возвращает объект запрошенной миниатюры
 	 *
-	 * @param string $name  имя миниатюры или null для миниатюры по умочланию
+	 * @param string $name  имя миниатюры (не файла миниатюры!) или null для миниатюры по умолчанию
 	 *
 	 * @return Image_Thumbnail
 	 *
