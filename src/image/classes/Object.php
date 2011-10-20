@@ -102,6 +102,13 @@ class Image_Object
 	private $thumbs = array();
 
 	/**
+	 * Кэш информации о картинке
+	 *
+	 * @var array
+	 */
+	private $info;
+
+	/**
 	 * Конструктор
 	 *
 	 * @param string $path
@@ -332,6 +339,34 @@ class Image_Object
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает ширину картинки в пикселях
+	 *
+	 * @return int
+	 *
+	 * @since 1.00
+	 */
+	public function getWidth()
+	{
+		$this->readInfo();
+		return $this->info['width'];
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Возвращает высоту картинки в пикселях
+	 *
+	 * @return int
+	 *
+	 * @since 1.00
+	 */
+	public function getHeight()
+	{
+		$this->readInfo();
+		return $this->info['height'];
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
 	 * Добавляет действие над изображением в очередь действий
 	 *
 	 * @param string $action
@@ -548,6 +583,26 @@ class Image_Object
 		}
 		imagecopy($dst, $src, $x, $y, 0, 0, $sw, $sh);
 		$image->setOldImage($dst);
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Чиатет информацию об изображении
+	 *
+	 * @return void
+	 *
+	 * @since 1.00
+	 */
+	private function readInfo()
+	{
+		if (!$this->info)
+		{
+			$info = getimagesize($this->path);
+			$this->info = array(
+				'width' => $info[0],
+				'height' => $info[1],
+			);
+		}
 	}
 	//-----------------------------------------------------------------------------
 }
