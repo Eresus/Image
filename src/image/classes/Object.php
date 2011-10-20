@@ -436,7 +436,18 @@ class Image_Object
 	{
 		$baseName = substr($this->path, 0, strrpos($this->path, '.'));
 		$files = glob($baseName . '.*');
-		$files = array_merge($files, glob($baseName . '-*'));
+		if (!is_array($files))
+		{
+			$files = array();
+		}
+		$files2 = glob($baseName . '-*');
+		if (!is_array($files2))
+		{
+			$files2 = array();
+		}
+
+		$files = array_merge($files, $files2);
+
 		foreach ($files as $file)
 		{
 			@unlink($file);
