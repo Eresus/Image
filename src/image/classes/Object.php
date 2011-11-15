@@ -303,8 +303,9 @@ class Image_Object
 		{
 			return;
 		}
-		foreach ($this->actionQueue as $action)
+		while (count($this->actionQueue))
 		{
+			$action = array_shift($this->actionQueue);
 			$methodName = 'action' . $action['action'];
 			if (!method_exists($this, $methodName))
 			{
