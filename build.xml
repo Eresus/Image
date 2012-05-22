@@ -43,7 +43,7 @@
 				--log-junit ${logs.dir}/phpunit.xml
 				--coverage-clover ${logs.dir}/phpunit.coverage.xml
 				--coverage-html ${phpunit.coverage.html}
-				${project.basedir}/tests/phpunit/AllTests.php"
+				--configuration ${project.basedir}/tests/phpunit/phpunit.xml"
 			checkreturn="true"
 			logoutput="true"
 		/>
@@ -147,7 +147,7 @@
 
 		<phpdoc title="Image ${product.version} API"
 			destdir="${docs.dir}"
-			sourcecode="no"
+			sourcecode="false"
 			parseprivate="false"
 			output="${docs.converter}">
 			<fileset refid="files.sources" />
@@ -180,7 +180,7 @@
 
 		</if>
 
-		<tar destfile="${distr.dir}/${phing.project.name}-${product.version}.tar.bz2" compression="bzip2">
+		<tar destFile="${distr.dir}/${phing.project.name}-${product.version}.tar.bz2" compression="bzip2">
 			<fileset dir="${build.dir}">
 				<include name="**" />
 			</fileset>
