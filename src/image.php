@@ -6,7 +6,7 @@
  *
  * @version ${product.version}
  *
- * @copyright 2011, Eresus Project, http://eresus.ru/
+ * @copyright 2011, Михаил Красильников <mihalych@vsepofigu.ru>
  * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
  * @author Михаил Красильников <mihalych@vsepofigu.ru>
  *
@@ -64,5 +64,6 @@ class Image extends Plugin
 	 *
 	 * @var string
 	 */
-	public $description = 'Работа с изображениями как с объектами. Требуется для работы других модулей';
+	public $description =
+		'Работа с изображениями как с объектами. Требуется для работы других модулей';
 }
