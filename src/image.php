@@ -50,7 +50,7 @@ class Image extends Plugin
 	 *
 	 * @var string
 	 */
-	public $kernel = '2.10';
+	public $kernel = '3.00b';
 
 	/**
 	 * Название модуля
