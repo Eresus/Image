@@ -6,7 +6,7 @@
  *
  * @version ${product.version}
  *
- * @copyright 2011, Eresus Project, http://eresus.ru/
+ * @copyright 2011, Михаил Красильников <mihalych@vsepofigu.ru>
  * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
  * @author Михаил Красильников <mihalych@vsepofigu.ru>
  *
@@ -28,7 +28,7 @@
  *
  * @package Image
  *
- * $Id: image.php 10411 2011-07-14 11:23:02Z mk $
+ * $Id$
  */
 
 /**
@@ -125,7 +125,7 @@ class Image_Object
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Геттер псевдо-свойств
+	 * Геттер псевдосвойств
 	 *
 	 * @param string $key
 	 *
@@ -192,19 +192,16 @@ class Image_Object
 			break;
 			case UPLOAD_ERR_INI_SIZE:
 			case UPLOAD_ERR_FORM_SIZE:
-				throw new DomainException(iconv('utf-8', 'cp1251',
-					'Размер загружаемого файла превышает максимально допустимый'));
+				throw new DomainException('Размер загружаемого файла превышает максимально допустимый');
 			break;
 			case UPLOAD_ERR_PARTIAL:
-				throw new DomainException(iconv('utf-8', 'cp1251',
-					'Во время загрузки файла произошёл сбой. Попробуйте ещё раз'));
+				throw new DomainException('Во время загрузки файла произошёл сбой. Попробуйте ещё раз');
 			break;
 		}
 
 		if (!in_array($info['type'], array_keys($this->supportedMimeTypes)))
 		{
-			throw new DomainException(iconv('utf-8', 'cp1251',
-				"Неподдерживаемый тип файла: {$info['type']}."));
+			throw new DomainException("Неподдерживаемый тип файла: {$info['type']}.");
 		}
 
 		if ($this->exists)
@@ -303,8 +300,9 @@ class Image_Object
 		{
 			return;
 		}
-		foreach ($this->actionQueue as $action)
+		while (count($this->actionQueue))
 		{
+			$action = array_shift($this->actionQueue);
 			$methodName = 'action' . $action['action'];
 			if (!method_exists($this, $methodName))
 			{
@@ -460,7 +458,7 @@ class Image_Object
 	 *
 	 * @param array $info
 	 *
-	 * @throws RuntimeException  если $info['tmp_file'] не указывет на правильный загруженный файл
+	 * @throws RuntimeException  если $info['tmp_file'] не указывает на правильный загруженный файл
 	 * @throws RuntimeException  если не удаётся создать промежуточную директорию
 	 *
 	 * @return void
@@ -598,7 +596,7 @@ class Image_Object
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Чиатет информацию об изображении
+	 * Читает информацию об изображении
 	 *
 	 * @return void
 	 *

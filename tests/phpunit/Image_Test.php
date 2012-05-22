@@ -1,13 +1,11 @@
 <?php
 /**
- * Image
- *
- * Плагин предоставляет другим модулям средства для работы с изображениями
+ * Модульные тесты
  *
  * @version ${product.version}
  *
  * @copyright 2011, Михаил Красильников <mihalych@vsepofigu.ru>
- * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
+ * @license http://www.gnu.org/licenses/gpl.txt	GPL License 3
  * @author Михаил Красильников <mihalych@vsepofigu.ru>
  *
  * Данная программа является свободным программным обеспечением. Вы
@@ -27,43 +25,26 @@
  * <http://www.gnu.org/licenses/>
  *
  * @package Image
+ * @subpackage Tests
  *
- * $Id: image.php 10411 2011-07-14 11:23:02Z mk $
+ * $Id: MyPlugin_Test.php 1849 2011-10-03 17:34:22Z mk $
  */
+
+
+require_once __DIR__ . '/bootstrap.php';
+require_once TESTS_SRC_DIR . '/image.php';
 
 /**
- * Класс плагина
- *
  * @package Image
+ * @subpackage Tests
  */
-class Image extends Plugin
+class Image_Test extends PHPUnit_Framework_TestCase
 {
 	/**
-	 * Версия
-	 *
-	 * @var string
 	 */
-	public $version = '${product.version}';
+	public function test_stub()
+	{
 
-	/**
-	 * Требуемая версия ядра
-	 *
-	 * @var string
-	 */
-	public $kernel = '3.00b';
-
-	/**
-	 * Название модуля
-	 *
-	 * @var string
-	 */
-	public $title = 'Image';
-
-	/**
-	 * Описание
-	 *
-	 * @var string
-	 */
-	public $description =
-		'Работа с изображениями как с объектами. Требуется для работы других модулей';
+	}
+	//-----------------------------------------------------------------------------
 }
