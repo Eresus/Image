@@ -4,7 +4,7 @@
  *
  * @version 1.00
  *
- * @copyright 2011, Eresus Project, http://eresus.ru/
+ * @copyright 2011, Михаил Красильников <mihalych@vsepofigu.ru>
  * @license http://www.gnu.org/licenses/gpl.txt GPL License 3
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
  * @package Image
  * @author Михаил Красильников <mihalych@vsepofigu.ru>
  *
- * $Id: Thumbnail.php 10415 2011-07-14 14:30:46Z mk $
+ * $Id$
  */
 
 /**
