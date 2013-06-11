@@ -1,0 +1,15 @@
+{
+    "name": "eresus/image",
+    "description": "Модуль расширения «Image» для Eresus CMS ",
+    "authors":
+    [
+        {
+            "name": "Михаил Красильников",
+            "email": "m.krasilnikov@yandex.ru"
+        }
+    ],
+    "require":
+    {
+        "mekras/test-doubles": "dev-master"
+    }
+}
