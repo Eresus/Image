@@ -173,6 +173,18 @@ class Image_Object
     }
 
     /**
+     * Возвращает true если картинка существует
+     *
+     * @return bool
+     *
+     * @since 2.01
+     */
+    public function isExists()
+    {
+        return $this->exists;
+    }
+
+    /**
      * Загружает файл по описанию из $_FILES
      *
      * @param array $info элемент массива $_FILES
