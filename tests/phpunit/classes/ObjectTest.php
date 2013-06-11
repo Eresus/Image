@@ -1,12 +1,12 @@
 <?php
 /**
- * Модульные тесты
+ * Тесты класса Image_Object
  *
  * @version ${product.version}
  *
- * @copyright 2011, Михаил Красильников <mihalych@vsepofigu.ru>
+ * @copyright 2011, Михаил Красильников <m.krasilnikov@yandex.ru>
  * @license http://www.gnu.org/licenses/gpl.txt	GPL License 3
- * @author Михаил Красильников <mihalych@vsepofigu.ru>
+ * @author Михаил Красильников <m.krasilnikov@yandex.ru>
  *
  * Данная программа является свободным программным обеспечением. Вы
  * вправе распространять ее и/или модифицировать в соответствии с
@@ -26,25 +26,27 @@
  *
  * @package Image
  * @subpackage Tests
- *
- * $Id: MyPlugin_Test.php 1849 2011-10-03 17:34:22Z mk $
  */
 
 
-require_once __DIR__ . '/bootstrap.php';
-require_once TESTS_SRC_DIR . '/image.php';
+require_once __DIR__ . '/../bootstrap.php';
+require_once TESTS_SRC_DIR . '/image/classes/Object.php';
 
 /**
  * @package Image
  * @subpackage Tests
  */
-class Image_Test extends PHPUnit_Framework_TestCase
+class Image_ObjectTest extends PHPUnit_Framework_TestCase
 {
-	/**
-	 */
-	public function test_stub()
-	{
-
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * @covers Image_Object::isChanged
+     */
+    public function testIsChanged()
+    {
+        $image = new Image_Object();
+        $this->assertFalse($image->isChanged());
+        $image->resize(1, 1);
+        $this->assertTrue($image->isChanged());
+    }
 }
+

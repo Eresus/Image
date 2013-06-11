@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
-	<filter>
-		<whitelist addUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">../../src</directory>
-			<exclude>
-				<directory suffix=".php">../../src/image/phpthumb</directory>
-			</exclude>
-		</whitelist>
-	</filter>
 
+<phpunit>
 	<testsuites>
 		<testsuite name="All tests">
-			<directory suffix="_Test.php">.</directory>
+			<directory suffix="Test.php">./</directory>
 		</testsuite>
 	</testsuites>
 
+	<filter>
+		<whitelist>
+			<directory>../../src</directory>
+		</whitelist>
+	</filter>
 </phpunit>

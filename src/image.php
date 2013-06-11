@@ -1,14 +1,12 @@
 <?php
 /**
- * Image
- *
- * Плагин предоставляет другим модулям средства для работы с изображениями
+ * Предоставляет другим модулям средства для работы с изображениями
  *
  * @version ${product.version}
  *
- * @copyright 2011, Михаил Красильников <mihalych@vsepofigu.ru>
+ * @copyright 2011, Михаил Красильников <m.krasilnikov@yandex.ru>
  * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
- * @author Михаил Красильников <mihalych@vsepofigu.ru>
+ * @author Михаил Красильников <m.krasilnikov@yandex.ru>
  *
  * Данная программа является свободным программным обеспечением. Вы
  * вправе распространять ее и/или модифицировать в соответствии с
@@ -27,8 +25,6 @@
  * <http://www.gnu.org/licenses/>
  *
  * @package Image
- *
- * $Id: image.php 10411 2011-07-14 11:23:02Z mk $
  */
 
 /**
@@ -38,32 +34,33 @@
  */
 class Image extends Plugin
 {
-	/**
-	 * Версия
-	 *
-	 * @var string
-	 */
-	public $version = '${product.version}';
+    /**
+     * Версия
+     *
+     * @var string
+     */
+    public $version = '${product.version}';
 
-	/**
-	 * Требуемая версия ядра
-	 *
-	 * @var string
-	 */
-	public $kernel = '3.00b';
+    /**
+     * Требуемая версия ядра
+     *
+     * @var string
+     */
+    public $kernel = '3.00b';
 
-	/**
-	 * Название модуля
-	 *
-	 * @var string
-	 */
-	public $title = 'Image';
+    /**
+     * Название модуля
+     *
+     * @var string
+     */
+    public $title = 'Image';
 
-	/**
-	 * Описание
-	 *
-	 * @var string
-	 */
-	public $description =
-		'Работа с изображениями как с объектами. Требуется для работы других модулей';
+    /**
+     * Описание
+     *
+     * @var string
+     */
+    public $description =
+        'Работа с изображениями как с объектами. Требуется для работы других модулей';
 }
+
