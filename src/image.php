@@ -36,32 +36,33 @@
  */
 class Image extends Plugin
 {
-	/**
-	 * Версия
-	 *
-	 * @var string
-	 */
-	public $version = '${product.version}';
+    /**
+     * Версия
+     *
+     * @var string
+     */
+    public $version = '${product.version}';
 
-	/**
-	 * Требуемая версия ядра
-	 *
-	 * @var string
-	 */
-	public $kernel = '3.00b';
+    /**
+     * Требуемая версия ядра
+     *
+     * @var string
+     */
+    public $kernel = '3.00b';
 
-	/**
-	 * Название модуля
-	 *
-	 * @var string
-	 */
-	public $title = 'Image';
+    /**
+     * Название модуля
+     *
+     * @var string
+     */
+    public $title = 'Image';
 
-	/**
-	 * Описание
-	 *
-	 * @var string
-	 */
-	public $description =
-		'Работа с изображениями как с объектами. Требуется для работы других модулей';
+    /**
+     * Описание
+     *
+     * @var string
+     */
+    public $description =
+        'Работа с изображениями как с объектами. Требуется для работы других модулей';
 }
+

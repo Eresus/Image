@@ -34,33 +34,33 @@
  */
 class Image_Thumbnail
 {
-	/**
-	 * Имя файла миниатюры
-	 *
-	 * @var string
-	 */
-	public $path;
+    /**
+     * Имя файла миниатюры
+     *
+     * @var string
+     */
+    public $path;
 
-	/**
-	 * URL миниатюры
-	 *
-	 * @var string
-	 */
-	public $url;
+    /**
+     * URL миниатюры
+     *
+     * @var string
+     */
+    public $url;
 
-	/**
-	 * Конструктор
-	 *
-	 * @param string $path
-	 *
-	 * @return Image_Thumbnail
-	 *
-	 * @since 1.00
-	 */
-	public function __construct($path)
-	{
-		$this->$path = $path;
-		$this->url = $GLOBALS['Eresus']->root . substr($path, strlen($GLOBALS['Eresus']->froot));
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Конструктор
+     *
+     * @param string $path
+     *
+     * @return Image_Thumbnail
+     *
+     * @since 1.00
+     */
+    public function __construct($path)
+    {
+        $this->$path = $path;
+        $this->url = $GLOBALS['Eresus']->root . substr($path, strlen($GLOBALS['Eresus']->froot));
+    }
 }
+
