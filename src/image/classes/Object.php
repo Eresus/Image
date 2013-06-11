@@ -135,11 +135,11 @@ class Image_Object
             case 'path':
                 return $this->path;
                 break;
-
             case 'url':
-                return $GLOBALS['Eresus']->root . substr($this->path, strlen($GLOBALS['Eresus']->froot));
+                $cms = Eresus_Kernel::app();
+                $legacyKernel = $cms->getLegacyKernel();
+                return $legacyKernel->root . substr($this->path, strlen($cms->getFsRoot()));
                 break;
-
             default:
                 return null;
                 break;
@@ -372,7 +372,7 @@ class Image_Object
      *
      * Инициализирует библиотеку PhpThumb.
      *
-     * @return ThumbBase
+     * @return GdThumb
      *
      * @since 1.00
      */
@@ -380,7 +380,8 @@ class Image_Object
     {
         if (!class_exists('PhpThumbFactory', false))
         {
-            include dirname(__FILE__) . '/../phpthumb/ThumbLib.inc.php';
+            /** @noinspection PhpIncludeInspection */
+            include __DIR__ . '/../phpthumb/ThumbLib.inc.php';
         }
         if (!$this->phpThumb)
         {
@@ -454,8 +455,8 @@ class Image_Object
             throw new RuntimeException('Not valid uploaded file ' . $info['tmp_name']);
         }
 
-        $dirs = explode('/', substr(dirname($this->path), strlen($GLOBALS['Eresus']->froot)));
-        $root = $GLOBALS['Eresus']->froot;
+        $root = Eresus_Kernel::app()->getFsRoot();
+        $dirs = explode('/', substr(dirname($this->path), strlen($root)));
         foreach ($dirs as $dir)
         {
             $path = $root . '/' . $dir;
@@ -529,6 +530,8 @@ class Image_Object
      * @param int    $padX      отступ от края по оси X
      * @param int    $padY      отступ от края по оси Y
      *
+     * @throws LogicException
+     *
      * @return void
      *
      * @since 1.00
@@ -537,7 +540,7 @@ class Image_Object
     {
         if (!file_exists($filename))
         {
-            return $this;
+            return;
         }
 
         $image = $this->getPhpThumb();
@@ -568,6 +571,8 @@ class Image_Object
                 $x = $dw - $sw - $padX;
                 $y = $dh - $sh - $padY;
                 break;
+            default:
+                throw new LogicException('Unknown origin');
         }
         imagecopy($dst, $src, $x, $y, 0, 0, $sw, $sh);
         $image->setOldImage($dst);
