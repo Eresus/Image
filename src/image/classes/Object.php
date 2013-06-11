@@ -51,7 +51,7 @@ class Image_Object
     /**
      * Список поддерживаемых форматов
      *
-     * @var array
+     * @var string[]
      * @since 1.00
      */
     private $supportedMimeTypes = array(
@@ -88,7 +88,7 @@ class Image_Object
      *
      * @var GdThumb
      */
-    private $phpThumb;
+    private $phpThumb = null;
 
     /**
      * Кэш миниатюр
@@ -161,12 +161,24 @@ class Image_Object
     }
 
     /**
+     * Возвращает true если картинка изменена, но изменения не сохранены
+     *
+     * @return bool
+     *
+     * @since 2.01
+     */
+    public function isChanged()
+    {
+        return count($this->actionQueue) > 0;
+    }
+
+    /**
      * Загружает файл по описанию из $_FILES
      *
      * @param array $info элемент массива $_FILES
      *
-     * @throws DomainException  если у файла слишком большой размер, если он был загружен частично или
-     *                          если у файла неподдерживаемый тип
+     * @throws DomainException  если у файла слишком большой размер, если он был загружен частично
+     *                          или если у файла неподдерживаемый тип
      *
      * @return bool  true если файл был загружен пользователем и false, если не был
      *
@@ -185,10 +197,12 @@ class Image_Object
                 break;
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
-                throw new DomainException('Размер загружаемого файла превышает максимально допустимый');
+                throw new DomainException(
+                    'Размер загружаемого файла превышает максимально допустимый');
                 break;
             case UPLOAD_ERR_PARTIAL:
-                throw new DomainException('Во время загрузки файла произошёл сбой. Попробуйте ещё раз');
+                throw new DomainException(
+                    'Во время загрузки файла произошёл сбой. Попробуйте ещё раз');
                 break;
         }
 
