@@ -25,8 +25,6 @@
  * <http://www.gnu.org/licenses/>
  *
  * @package Image
- *
- * $Id: image.php 10411 2011-07-14 11:23:02Z mk $
  */
 
 /**

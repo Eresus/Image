@@ -1,7 +1,5 @@
 <?php
 /**
- * Image
- *
  * Объект изображения
  *
  * @version ${product.version}
@@ -27,8 +25,6 @@
  * <http://www.gnu.org/licenses/>
  *
  * @package Image
- *
- * $Id$
  */
 
 /**
@@ -282,6 +278,8 @@ class Image_Object
     /**
      * Сохраняет изменения изображения
      *
+     * @throws LogicException
+     *
      * @return void
      *
      * @since 1.00
@@ -355,8 +353,8 @@ class Image_Object
     /**
      * Добавляет действие над изображением в очередь действий
      *
-     * @param string $action
-     * @param mixed  $arg1,…
+     * @param string $action  действие
+     * @param ...             дополнительные аргументы действия
      *
      * @return void
      *
@@ -374,7 +372,7 @@ class Image_Object
      *
      * Инициализирует библиотеку PhpThumb.
      *
-     * @return void
+     * @return ThumbBase
      *
      * @since 1.00
      */
@@ -390,7 +388,6 @@ class Image_Object
         }
         return $this->phpThumb;
     }
-    //-----------------------------------------------------------------------------
 
     /**
      * Возвращает имя файла миниатюры по её имени
