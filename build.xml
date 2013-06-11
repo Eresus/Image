@@ -158,7 +158,7 @@
                 <expandproperties />
             </filterchain>
         </copy>
-        <copy todir="${build.dir}/image/classes/phpthumb">
+        <copy todir="${build.dir}/image/phpthumb">
             <fileset dir="vendor/weotch/phpthumb/src">
                 <include name="**"/>
                 <exclude name="examples/**"/>
