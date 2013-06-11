@@ -10,12 +10,12 @@
     =====================================================================
     -->
 
-    <!-- Все исходные файлы -->
+    <!-- Исходные файлы модуля -->
     <fileset dir="src" id="files.sources">
         <include name="**" />
     </fileset>
 
-    <!-- Исходные файлы PHP -->
+    <!-- Исходные файлы модуля (только PHP) -->
     <fileset dir="src" id="files.sources.php">
         <include name="**/*.php" />
     </fileset>
@@ -157,6 +157,12 @@
             <filterchain>
                 <expandproperties />
             </filterchain>
+        </copy>
+        <copy todir="${build.dir}/image/classes/phpthumb">
+            <fileset dir="vendor/weotch/phpthumb/src">
+                <include name="**"/>
+                <exclude name="examples/**"/>
+            </fileset>
         </copy>
 
     </target>

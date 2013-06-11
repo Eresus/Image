@@ -1,6 +1,6 @@
 {
     "name": "eresus/image",
-    "description": "Модуль расширения «Image» для Eresus CMS ",
+    "description": "Модуль расширения «Image» для Eresus CMS",
     "authors":
     [
         {
@@ -10,6 +10,7 @@
     ],
     "require":
     {
+        "weotch/phpthumb": "1.0.4",
         "mekras/test-doubles": "dev-master"
     }
 }
