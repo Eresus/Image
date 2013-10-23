@@ -60,7 +60,7 @@ class Image_Thumbnail
      */
     public function __construct($path)
     {
-        $this->$path = $path;
+        $this->path = $path;
         $cms = Eresus_Kernel::app();
         $legacyKernel = $cms->getLegacyKernel();
         $this->url = $legacyKernel->root . substr($this->path, strlen($cms->getFsRoot()));
