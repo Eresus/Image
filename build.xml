@@ -152,6 +152,16 @@
 
         <mkdir dir="${build.dir}" />
 
+        <if>
+            <not>
+                <available file="vendor/weotch" property="." />
+            </not>
+            <then>
+                <phingcall target="vendors" />
+            </then>
+        </if>
+
+
         <copy todir="${build.dir}">
             <fileset refid="files.sources" />
             <filterchain>
