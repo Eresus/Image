@@ -43,10 +43,28 @@ class Image_ObjectTest extends PHPUnit_Framework_TestCase
      */
     public function testIsChanged()
     {
-        $image = new Image_Object();
+        /** @var Image_Object $image */
+        $image = $this->getMockBuilder('Image_Object')->disableOriginalConstructor()
+            ->setMethods(array('none'))->getMock();
         $this->assertFalse($image->isChanged());
         $image->resize(1, 1);
         $this->assertTrue($image->isChanged());
+    }
+
+    /**
+     * @covers Image_Object::changeExtension
+     */
+    public function testChangeExtension()
+    {
+        $changeExtension = new ReflectionMethod('Image_Object', 'changeExtension');
+        $changeExtension->setAccessible(true);
+
+        $this->assertEquals('/foo/bar.png',
+            $changeExtension->invoke(null, '/foo/bar.baz', 'image/png'));
+        $this->assertEquals('/foo/bar.png',
+            $changeExtension->invoke(null, '/foo/bar', 'image/png'));
+        $this->assertEquals('/foo.bar/baz.png',
+            $changeExtension->invoke(null, '/foo.bar/baz.gif', 'image/png'));
     }
 }
 

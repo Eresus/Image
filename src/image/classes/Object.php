@@ -54,7 +54,7 @@ class Image_Object
      * @var string[]
      * @since 1.00
      */
-    private $supportedMimeTypes = array(
+    private static $supportedMimeTypes = array(
         'image/jpeg' => 'jpg',
         'image/jpg' => 'jpg',
         'image/pjpeg' => 'jpg',
@@ -68,6 +68,15 @@ class Image_Object
      * @var string
      */
     private $path;
+
+    /**
+     * Тип MIME
+     *
+     * @var string
+     *
+     * @since 2.02
+     */
+    private $type = null;
 
     /**
      * Существует ли этот файл
@@ -105,18 +114,85 @@ class Image_Object
     private $info;
 
     /**
-     * Конструктор
+     * Создаёт объект для файла, загруженного по HTTP
      *
-     * @param string $path
+     * @param array $info  сведения о файле из переменной $_FILES
      *
      * @return Image_Object
+     *
+     * @throws DomainException
+     *
+     * @since 2.02
+     */
+    public static function createFromUploaded(array $info)
+    {
+        switch ($info['error'])
+        {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                throw new DomainException(
+                    _('Размер загружаемого файла превышает максимально допустимый'));
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                throw new DomainException(
+                    _('Во время загрузки файла произошёл сбой. Попробуйте ещё раз'));
+                break;
+        }
+
+        $image = new self($info['tmp_name']);
+        $image->type = $info['type'];
+        if (is_null($image->getType()))
+        {
+            throw new DomainException(sprintf(_('Неподдерживаемый тип файла: %s'),
+                $image->type));
+        }
+        $image->addAction('upload', $info);
+
+        return $image;
+    }
+
+    /**
+     * Создаёт новый объект изображения
+     *
+     * Начиная с 2.02, возможность не указывать $path объявлена устаревшей
+     * Начиная с 2.02, файл $path должен существовать
+     *
+     * @param string $path  путь к файлу изображения
+     *
+     * @throws DomainException если тип файла не поддерживается
      *
      * @since 1.00
      */
     public function __construct($path = null)
     {
+        if (is_null($path))
+        {
+            trigger_error('It is deprecated omitting path in ' . __METHOD__, E_USER_DEPRECATED);
+        }
         $this->path = $path;
-        $this->exists = file_exists($this->path);
+        if (is_uploaded_file($path))
+        {
+            $this->exists = true;
+        }
+        else
+        {
+            $this->exists = file_exists($this->path);
+            if ($this->exists)
+            {
+                $this->readInfo();
+                if (is_null($this->getType()))
+                {
+                    throw new DomainException(sprintf(_('Неподдерживаемый тип файла: %s'),
+                        $this->type));
+                }
+            }
+        }
+
+        if (!$this->exists)
+        {
+            trigger_error('It is deprecated specifying not existed path in ' . __METHOD__,
+                E_USER_DEPRECATED);
+        }
     }
 
     /**
@@ -133,17 +209,89 @@ class Image_Object
         switch ($key)
         {
             case 'path':
-                return $this->path;
+                return $this->getPath();
                 break;
             case 'url':
-                $cms = Eresus_Kernel::app();
-                $legacyKernel = $cms->getLegacyKernel();
-                return $legacyKernel->root . substr($this->path, strlen($cms->getFsRoot()));
+                return $this->getUrl();
                 break;
             default:
                 return null;
                 break;
         }
+    }
+
+    /**
+     * Возвращает путь к файлу картинки
+     *
+     * Внимание! Метод не учитывает несохранённые изменения (см. {@link save()}).
+     *
+     * @return string
+     *
+     * @since 2.02
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Возвращает URL файла картинки
+     *
+     * Внимание! Метод не учитывает несохранённые изменения (см. {@link save()}).
+     *
+     * @return string
+     *
+     * @since 2.02
+     */
+    public function getUrl()
+    {
+        $cms = Eresus_Kernel::app();
+        $legacyKernel = $cms->getLegacyKernel();
+        return $legacyKernel->root . substr($this->path, strlen($cms->getFsRoot()));
+    }
+
+    /**
+     * Возвращает ширину картинки в пикселях
+     *
+     * Внимание! Метод не учитывает несохранённые изменения (см. {@link save()}).
+     *
+     * @return int
+     *
+     * @since 1.00
+     */
+    public function getWidth()
+    {
+        $this->readInfo();
+        return $this->info['width'];
+    }
+
+    /**
+     * Возвращает высоту картинки в пикселях
+     *
+     * Внимание! Метод не учитывает несохранённые изменения (см. {@link save()}).
+     *
+     * @return int
+     *
+     * @since 1.00
+     */
+    public function getHeight()
+    {
+        $this->readInfo();
+        return $this->info['height'];
+    }
+
+    /**
+     * Возвращает тип файла или null, если тип не поддерживается
+     *
+     * @return null|string  "png", "jpg", "gif" или null
+     */
+    public function getType()
+    {
+        if (!in_array($this->type, array_keys(self::$supportedMimeTypes)))
+        {
+            return null;
+        }
+        return self::$supportedMimeTypes[$this->type];
     }
 
     /**
@@ -154,9 +302,14 @@ class Image_Object
      * @return void
      *
      * @since 1.00
+     * @deprecated с 2.02 указывайте путь в конструкторе или используйте {@link moveTo()}.
      */
     public function setPath($path)
     {
+        if (is_null($path))
+        {
+            trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        }
         $this->path = $path;
     }
 
@@ -185,6 +338,20 @@ class Image_Object
     }
 
     /**
+     * Перемещает файл картинки в указанное расположение
+     *
+     * @param string $path  новый путь к картинке (включая имя)
+     *
+     * @return void
+     *
+     * @since 2.02
+     */
+    public function moveTo($path)
+    {
+        $this->addAction('moveTo', $path);
+    }
+
+    /**
      * Загружает файл по описанию из $_FILES
      *
      * @param array $info элемент массива $_FILES
@@ -195,9 +362,12 @@ class Image_Object
      * @return bool  true если файл был загружен пользователем и false, если не был
      *
      * @since 1.00
+     * @deprecated с 2.02 используйте {@link createFromUploaded()}.
      */
     public function upload(array $info)
     {
+        trigger_error(__METHOD__ . ' method is deprecated, use createFromUploaded()',
+            E_USER_DEPRECATED);
         switch ($info['error'])
         {
             case UPLOAD_ERR_NO_FILE:
@@ -218,19 +388,12 @@ class Image_Object
                 break;
         }
 
-        if (!in_array($info['type'], array_keys($this->supportedMimeTypes)))
-        {
-            throw new DomainException("Неподдерживаемый тип файла: {$info['type']}.");
-        }
+        $this->path = self::changeExtension($this->path, $info['type']);
 
         if ($this->exists)
         {
             $this->addAction('delete');
         }
-
-        /* Устанавливаем правильное расширение файла */
-        $newExt = $this->supportedMimeTypes[$info['type']];
-        $this->path = substr_replace($this->path, $newExt, strrpos($this->path, '.') + 1);
 
         $this->addAction('upload', $info);
         return true;
@@ -351,32 +514,6 @@ class Image_Object
     }
 
     /**
-     * Возвращает ширину картинки в пикселях
-     *
-     * @return int
-     *
-     * @since 1.00
-     */
-    public function getWidth()
-    {
-        $this->readInfo();
-        return $this->info['width'];
-    }
-
-    /**
-     * Возвращает высоту картинки в пикселях
-     *
-     * @return int
-     *
-     * @since 1.00
-     */
-    public function getHeight()
-    {
-        $this->readInfo();
-        return $this->info['height'];
-    }
-
-    /**
      * Добавляет действие над изображением в очередь действий
      *
      * @param string $action  действие
@@ -434,27 +571,65 @@ class Image_Object
     }
 
     /**
+     * Устанавливает правильное расширение файла
+     *
+     * @param string $filename  имя файла
+     * @param string $mimeType  тип MIME
+     *
+     * @throws DomainException  если указанный тип файла не поддерживается
+     *
+     * @return string  имя файла с исправленным расширением
+     *
+     * @since 2.02
+     */
+    protected static function changeExtension($filename, $mimeType)
+    {
+        if (!in_array($mimeType, array_keys(self::$supportedMimeTypes)))
+        {
+            throw new DomainException("Неподдерживаемый тип файла: {$mimeType}.");
+        }
+        $parts = pathinfo($filename);
+        $newExt = self::$supportedMimeTypes[$mimeType];
+        $filename = $parts['dirname'] . DIRECTORY_SEPARATOR . $parts['filename'] . '.' . $newExt;
+        return $filename;
+    }
+
+    /**
+     * Перемещает (переименовывает) файл картинки с перезаписью существующих файлов
+     *
+     * @param string $path
+     *
+     * @return void
+     *
+     * @since 2.02
+     */
+    protected function actionMoveTo($path)
+    {
+        if (file_exists($path))
+        {
+            unlink($path);
+        }
+        rename($this->path, $path);
+        $this->path = $path;
+    }
+
+    /**
      * Удалаяет все файлы этого изображения
      *
      * @return void
      *
      * @since 1.00
      */
-    private function actionDelete()
+    protected function actionDelete()
     {
         $baseName = substr($this->path, 0, strrpos($this->path, '.'));
-        $files = glob($baseName . '.*');
+        $files = glob($baseName . '-thumb*.png');
         if (!is_array($files))
         {
             $files = array();
         }
-        $files2 = glob($baseName . '-*');
-        if (!is_array($files2))
-        {
-            $files2 = array();
-        }
 
-        $files = array_merge($files, $files2);
+        array_push($files, $this->getPath());
 
         foreach ($files as $file)
         {
@@ -468,19 +643,25 @@ class Image_Object
      * @param array $info
      *
      * @throws RuntimeException  если $info['tmp_file'] не указывает на правильный загруженный файл
-     * @throws RuntimeException  если не удаётся создать промежуточную директорию
+     *                           или не удаётся создать промежуточную директорию
      *
      * @return void
      *
      * @since 1.00
      */
-    private function actionUpload($info)
+    protected function actionUpload($info)
     {
         if (!is_uploaded_file($info['tmp_name']))
         {
             throw new RuntimeException('Not valid uploaded file ' . $info['tmp_name']);
         }
 
+        if ($info['tmp_name'] == $this->path)
+        /* Если путь для загрузки файла не был указан, задаём временное имя */
+        {
+            $this->path = tempnam(sys_get_temp_dir(), 'image-upload-');
+            $this->path = self::changeExtension($this->path, $info['type']);
+        }
         $root = Eresus_Kernel::app()->getFsRoot();
         $dirs = explode('/', substr(dirname($this->path), strlen($root)));
         foreach ($dirs as $dir)
@@ -492,6 +673,7 @@ class Image_Object
                 try
                 {
                     mkdir($path, 0777);
+                    umask($umask);
                 }
                 catch (Exception $e)
                 {
@@ -499,7 +681,6 @@ class Image_Object
                     throw new RuntimeException(sprintf('Can\'t create directory "%s": %s', $path,
                         $e->getMessage()));
                 }
-                umask($umask);
             }
             $root = $path;
         }
@@ -522,7 +703,7 @@ class Image_Object
      *
      * @since 1.00
      */
-    private function actionResize($width, $height)
+    protected function actionResize($width, $height)
     {
         $image = $this->getPhpThumb();
         $image->resize($width, $height);
@@ -539,7 +720,7 @@ class Image_Object
      *
      * @since 1.00
      */
-    private function actionThumbnail($name, $width, $height)
+    protected function actionThumbnail($name, $width, $height)
     {
         $target = $this->getThumbName($name);
         $image = clone $this->getPhpThumb();
@@ -562,7 +743,7 @@ class Image_Object
      *
      * @since 1.00
      */
-    private function actionOverlay($filename, $origin, $padX, $padY)
+    protected function actionOverlay($filename, $origin, $padX, $padY)
     {
         if (!file_exists($filename))
         {
@@ -620,6 +801,7 @@ class Image_Object
                 'width' => $info[0],
                 'height' => $info[1],
             );
+            $this->type = $info['mime'];
         }
     }
 }
