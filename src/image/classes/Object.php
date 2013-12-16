@@ -118,7 +118,7 @@ class Image_Object
      *
      * @param array $info  сведения о файле из переменной $_FILES
      *
-     * @return Image_Object
+     * @return Image_Object|null  объект картинки или null, если файл не был загружен
      *
      * @throws DomainException
      *
@@ -137,6 +137,8 @@ class Image_Object
                 throw new DomainException(
                     _('Во время загрузки файла произошёл сбой. Попробуйте ещё раз'));
                 break;
+            case UPLOAD_ERR_NO_FILE:
+                return null;
         }
 
         $image = new self($info['tmp_name']);
