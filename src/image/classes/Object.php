@@ -249,7 +249,8 @@ class Image_Object
     {
         $cms = Eresus_Kernel::app();
         $legacyKernel = $cms->getLegacyKernel();
-        return $legacyKernel->root . substr($this->path, strlen($cms->getFsRoot()));
+        $rootUrl = rtrim($legacyKernel->root, '/');
+        return $rootUrl . substr($this->path, strlen($cms->getFsRoot()));
     }
 
     /**
