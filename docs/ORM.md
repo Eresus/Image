@@ -12,7 +12,6 @@
 
 ```php
 
-    <?php
     public function setTableDefinition()
     {
         …
@@ -30,12 +29,17 @@
 Добавим приватное свойство `newImage`, где будем хранить загруженное изображение, до сохранения
 объекта в БД:
 
+```php
+
     /**
      * @var null|Image_Object
      */
     private $newImage = null;
+```
 
 Создадим метод, составляющий имя файла изображения:
+
+```php
 
     /**
      * @param string $ext расширение
@@ -47,8 +51,11 @@
         $path = $this->getTable()->getPlugin()->getDataDir() . $this->id . '.' . $ext;
         return $path;
     }
+```
 
 Добавим геттер для получения значения свойства `image`:
+
+```php
 
     /**
      * @return Image_Object
@@ -58,8 +65,11 @@
         $filename = $this->composeImagePath($this->getPdoValue('image'));
         return file_exists($filename) ? new Image_Object($filename) : null;
     }
+```
 
 И сеттер, для загрузки изображений:
+
+```php
 
     /**
      * @param array $uploaded  информация о файле из $_FILES
@@ -68,8 +78,11 @@
     {
         $this->newImage = Image_Object::createFromUploaded($uploaded);
     }
+```
 
 Добавим в метод `afterSave` действия по сохранению загруженной картинки:
+
+```php
 
     public function afterSave()
     {
@@ -82,8 +95,11 @@
             $this->newImage = null;
             $this->getTable()->update($this);
         }
+```
 
 При удалении объекта не забываем удалять картинку:
+
+```php
 
     public function afterDelete()
     {
@@ -91,3 +107,4 @@
         {
             $this->image->delete();
         }
+```
